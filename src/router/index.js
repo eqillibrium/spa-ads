@@ -7,6 +7,7 @@ import NewAd from '@/components/Ads/NewAd.vue'
 import Login from '@/components/Auth/Login.vue'
 import Registration from '@/components/Auth/Registration.vue'
 import Orders from '@/components/User/Orders.vue'
+import Guard from './auth-guard'
 
 Vue.use(VueRouter)
 
@@ -25,12 +26,14 @@ const routes = [
   {
     path: '/list',
     name: 'list',
-    component: AdList
+    component: AdList,
+    beforeEnter: Guard
   },
   {
     path: '/new',
     name: 'newAd',
-    component: NewAd
+    component: NewAd,
+    beforeEnter: Guard
   },
   {
     path: '/login',
@@ -45,7 +48,8 @@ const routes = [
   {
     path: '/orders',
     name: 'orders',
-    component: Orders
+    component: Orders,
+    beforeEnter: Guard
   }
 ]
 
