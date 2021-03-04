@@ -14,7 +14,7 @@
             >
               <v-card class="elevation-12">
                 <v-toolbar
-                  color="primary"
+                  color="dark"
                   dark
                   flat
                 >
@@ -60,10 +60,18 @@
                 <v-card-actions>
                   <v-spacer></v-spacer>
                   <v-btn
-                    color="primary"
+                  dark
+                    color="green"
                     @click="onSubmit"
-                    :disabled="!valid"
-                    >Create account</v-btn>
+                    :loading="loading"
+                    :disabled="!valid || loading"
+                    >Create account
+                      <template v-slot:loader>
+                        <span class="custom-loader">
+                          <v-icon dark color="black">mdi-cached</v-icon>
+                        </span>
+                      </template>
+                    </v-btn>
                 </v-card-actions>
               </v-card>
             </v-col>
@@ -93,6 +101,11 @@ export default {
       ]
     }
   },
+  computed: {
+    loading () {
+      return this.$store.getters.loading
+    }
+  },
   methods: {
     onSubmit () {
       if (this.$refs.form.validate()) {
@@ -101,6 +114,10 @@ export default {
           password: this.password
         }
         this.$store.dispatch('registerUser', user)
+          .then(() => {
+            this.$router.push('/')
+          })
+          .catch(err => console.log(err))
       }
     }
   }

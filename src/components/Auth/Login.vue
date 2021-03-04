@@ -14,7 +14,7 @@
             >
               <v-card class="elevation-12">
                 <v-toolbar
-                  color="primary"
+                  color="dark"
                   dark
                   flat
                 >
@@ -85,7 +85,11 @@ export default {
           email: this.email,
           password: this.password
         }
-        console.log(user)
+        this.$store.dispatch('loginUser', user)
+          .then(() => {
+            this.$router.push('/')
+          })
+          .catch(err => console.log(err))
       }
     }
   }
