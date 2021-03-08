@@ -28,6 +28,7 @@ new Vue({
         this.$store.dispatch('autoLoginUser', user)
       }
     })
+    this.$store.dispatch('fetchAds')
   },
   render: h => h(App)
 }).$mount('#app')

@@ -56,7 +56,11 @@
                     <v-layout>
                     <v-flex xs12>
                       <v-spacer>
-                        <v-btn @click="createAd" color="green" :disabled="!valid">
+                        <v-btn
+                          @click="createAd"
+                          color="green"
+                          :loading="loading"
+                          :disabled="!valid || loading">
                           Create ad
                         </v-btn>
                       </v-spacer>
@@ -77,6 +81,11 @@ export default {
       valid: false
     }
   },
+  computed: {
+    loading () {
+      return this.$store.getters.loading
+    }
+  },
   methods: {
     createAd () {
       if (this.$refs.form.validate()) {
@@ -87,6 +96,10 @@ export default {
           img: 'https://ru.gecid.com/data/news/201711080838-50148/img/02_nvidia_titan_xp_collectors_edition.jpg'
         }
         this.$store.dispatch('createAd', ad)
+          .then(() => {
+            this.$router.push('/list')
+          })
+          .catch(() => {})
       }
     }
   }
