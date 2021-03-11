@@ -1,6 +1,7 @@
 // import { keys } from 'core-js/fn/array'
 import fb from 'firebase/app'
 import 'firebase/database'
+import 'firebase/storage'
 class Ad {
   constructor (
     title,
@@ -29,6 +30,7 @@ export default {
   },
   mutations: {
     createAd (state, payload) {
+      console.log(payload)
       state.ads.push(payload)
     },
     loadAds (state, payload) {
@@ -40,18 +42,33 @@ export default {
       commit('clearError')
       commit('setLoading', true)
 
+      const image = payload.img
+      console.log(image)
       try {
         const newAd = new Ad(
           payload.title,
           payload.description,
           payload.promo,
-          payload.img,
+          '',
           getters.user.id
         )
         const ad = await fb.database().ref('ads').push(newAd)
+        const imageExt = image.name.slice(image.name.lastIndexOf('.'))
+        console.log(imageExt)
+        const storageRef = await fb.storage().ref()
+        const imageRef = await storageRef.child(`ads/${ad.key}${imageExt}`)
+        const fileData = await imageRef.put(image)
+        console.log(fileData)
+        const img = await imageRef.getDownloadURL()
+        console.log(img)
+        await fb.database().ref('ads').child(ad.key).update({
+          img
+        })
+        // `path` param cannot contain ".." (storage/invalid-argument)
         commit('setLoading', false)
         commit('createAd', {
           ...newAd,
+          img: img,
           id: ad.key
         })
       } catch (error) {

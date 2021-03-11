@@ -29,6 +29,7 @@
                     <v-flex xs12>
                     <v-btn
                       class="dark--text"
+                      @click="triggerUpload"
                     >
                       Upload
                       <v-icon
@@ -38,11 +39,21 @@
                         mdi-cloud-upload
                       </v-icon>
                     </v-btn>
+                    <input ref="fileInput"
+                    type="file"
+                    style="display: none;"
+                    accept="image/*"
+                    @change="onFileChange"
+                    >
                     </v-flex>
                   </v-layout>
                   <v-layout row class="mt-3">
                     <v-flex xs12>
-                      <img src="https://geeksus.ru/wp-content/uploads/2018/10/Quadro-P6000-11.jpg" height="100px">
+                      <img
+                      width="300"
+                      :src="imageSrc"
+                      v-if="imageSrc"
+                      >
                     </v-flex>
                   </v-layout>
                   <v-layout>
@@ -60,7 +71,7 @@
                           @click="createAd"
                           color="green"
                           :loading="loading"
-                          :disabled="!valid || loading">
+                          :disabled="!valid || !image || loading">
                           Create ad
                         </v-btn>
                       </v-spacer>
@@ -78,7 +89,9 @@ export default {
       title: '',
       description: '',
       promo: false,
-      valid: false
+      valid: false,
+      image: null,
+      imageSrc: ''
     }
   },
   computed: {
@@ -88,12 +101,12 @@ export default {
   },
   methods: {
     createAd () {
-      if (this.$refs.form.validate()) {
+      if (this.$refs.form.validate() && this.image) {
         const ad = {
           title: this.title,
           description: this.description,
           promo: this.promo,
-          img: 'https://ru.gecid.com/data/news/201711080838-50148/img/02_nvidia_titan_xp_collectors_edition.jpg'
+          img: this.image
         }
         this.$store.dispatch('createAd', ad)
           .then(() => {
@@ -101,6 +114,18 @@ export default {
           })
           .catch(() => {})
       }
+    },
+    triggerUpload () {
+      this.$refs.fileInput.click()
+    },
+    onFileChange (event) {
+      const file = event.target.files[0]
+      const reader = new FileReader()
+      reader.onload = e => {
+        this.imageSrc = reader.result
+      }
+      reader.readAsDataURL(file)
+      this.image = file
     }
   }
 }
